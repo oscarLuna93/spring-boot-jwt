@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.oscar.springboot.app.auth.filter.JWTAuthenticationFilter;
+import com.oscar.springboot.app.auth.filter.JWTAuthorizationFilter;
 import com.oscar.springboot.app.models.service.JpaUserDetailsService;
 
 @Configuration
@@ -47,6 +48,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 		.exceptionHandling().accessDeniedPage("/error_403")*/
 		.and()
 		.addFilter(new JWTAuthenticationFilter(authenticationManager()))
+		.addFilter(new JWTAuthorizationFilter(authenticationManager()))
 		.csrf().disable()
 		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 	}
