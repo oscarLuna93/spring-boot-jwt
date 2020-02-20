@@ -1,6 +1,8 @@
 package com.oscar.springboot.app.auth.filter;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,12 +16,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
@@ -91,14 +95,22 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 			Authentication authResult) throws IOException, ServletException {
 		String username = ( (User) authResult.getPrincipal()).getUsername();
 		
+		Collection<? extends GrantedAuthority> roles = authResult.getAuthorities();
+		
+		Claims claims = Jwts.claims();
+		claims.put("authorities", new ObjectMapper().writeValueAsString(roles));
+		
 		//forma automatica, llave por default
 		//SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 		
 		SecretKey secretKey = Keys.hmacShaKeyFor(PRIVATE_KEY_RSA.getBytes());
 		
 		String token = Jwts.builder()
+				.setClaims(claims)
 				.setSubject(username)
 				.signWith(secretKey)
+				.setIssuedAt(new Date())
+				.setExpiration(new Date(System.currentTimeMillis() + 3600000))
 				.compact();
 		
 		response.addHeader("Authorization", "Bearer ".concat(token));
