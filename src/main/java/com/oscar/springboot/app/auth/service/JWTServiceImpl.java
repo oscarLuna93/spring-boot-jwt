@@ -1,5 +1,7 @@
 package com.oscar.springboot.app.auth.service;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 
@@ -7,11 +9,12 @@ import javax.crypto.SecretKey;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.oscar.springboot.app.auth.SimpleGrantedAuthorityMixin;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -49,7 +52,7 @@ public class JWTServiceImpl implements JWTService {
 			"CBEBllhxl7ijpE1ZNLhV5BQ=";
 	
 	@Override
-	public String create(Authentication auth) throws JsonProcessingException {
+	public String create(Authentication auth) throws IOException {
 		String username = ((User) auth.getPrincipal()).getUsername();
 
 		Collection<? extends GrantedAuthority> roles = auth.getAuthorities();
@@ -93,9 +96,12 @@ public class JWTServiceImpl implements JWTService {
 	}
 
 	@Override
-	public Collection<? extends GrantedAuthority> getRoles(String token) {
-		// TODO Auto-generated method stub
-		return null;
+	public Collection<? extends GrantedAuthority> getRoles(String token) throws IOException {
+		Object roles = getClaims(token).get("authorities");
+		
+		return Arrays.asList(new ObjectMapper()
+				.addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixin.class)
+				.readValue(roles.toString().getBytes(), SimpleGrantedAuthority[].class));
 	}
 
 	@Override
