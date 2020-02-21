@@ -14,6 +14,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
@@ -68,15 +69,23 @@ public class JWTServiceImpl implements JWTService {
 	}
 
 	@Override
-	public boolean validate(String token) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean validate(String token) {		
+		try {
+			getClaims(token);
+
+			return true;
+		} catch (JwtException | IllegalArgumentException e) {
+			return false;
+		}
 	}
 
 	@Override
 	public Claims getClaims(String token) {
-		// TODO Auto-generated method stub
-		return null;
+		Claims claims = Jwts.parserBuilder().setSigningKey(PRIVATE_KEY_RSA.getBytes()).build()
+				.parseClaimsJws(token.replace("Bearer", ""))
+				.getBody();
+		
+		return claims;
 	}
 
 	@Override
