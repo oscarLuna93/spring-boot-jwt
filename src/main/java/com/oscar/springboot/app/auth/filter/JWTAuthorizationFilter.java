@@ -18,6 +18,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oscar.springboot.app.auth.SimpleGrantedAuthorityMixin;
+import com.oscar.springboot.app.auth.service.JWTService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -50,9 +51,11 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 			+ "PBNvXiXKdbvWiW4uq4nchF12d/0cBGj1EeGI43elAoGAQWkwNGYwHP/6ansz4Lpo\n"
 			+ "be0c0RUYTiRWKFRBBnKfmzl7OdufLBGANEbPWY1pu/WMgktf6eRr0Is1yUjmUXmE\n"
 			+ "c7ecrP//3biX3d2z1P1LLA86sf7irFvF++EDWQTH/0xRb43wGA09eODk5cQRvzin\n" + "CBEBllhxl7ijpE1ZNLhV5BQ=";
-
-	public JWTAuthorizationFilter(AuthenticationManager authenticationManager) {
+	private JWTService jwtService;
+	
+	public JWTAuthorizationFilter(AuthenticationManager authenticationManager, JWTService jwtService) {
 		super(authenticationManager);
+		this.jwtService = jwtService;
 	}
 
 	@Override
@@ -66,20 +69,9 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 			return;
 		}
 
-		boolean tokenIsValid;
-		Claims token = null;
-
-		try {
-			token = Jwts.parserBuilder().setSigningKey(PRIVATE_KEY_RSA.getBytes()).build()
-					.parseClaimsJws(header.replace("Bearer", "")).getBody();
-			tokenIsValid = true;
-		} catch (JwtException | IllegalArgumentException e) {
-			tokenIsValid = false;
-		}
-
 		UsernamePasswordAuthenticationToken authentication = null;
 		
-		if (tokenIsValid) {
+		if () {
 			String username = token.getSubject();
 			Object roles = token.get("authorities");
 
