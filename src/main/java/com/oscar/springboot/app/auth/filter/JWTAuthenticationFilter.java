@@ -19,6 +19,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oscar.springboot.app.auth.service.JWTService;
+import com.oscar.springboot.app.auth.service.JWTServiceImpl;
 import com.oscar.springboot.app.models.entity.Usuario;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter{
@@ -69,7 +70,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 		
 		String token = jwtService.create(authResult);
 		
-		response.addHeader("Authorization", "Bearer ".concat(token));
+		response.addHeader(JWTServiceImpl.HEADER_STRING, JWTServiceImpl.TOKEN_PREFIX.concat(token));
 		
 		Map<String, Object> body = new HashMap<String, Object>();
 		body.put("token", token);

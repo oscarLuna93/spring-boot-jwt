@@ -51,6 +51,12 @@ public class JWTServiceImpl implements JWTService {
 			"c7ecrP//3biX3d2z1P1LLA86sf7irFvF++EDWQTH/0xRb43wGA09eODk5cQRvzin\n" + 
 			"CBEBllhxl7ijpE1ZNLhV5BQ=";
 	
+	private static final long EXPIRATION_DATE = 3600000;
+	
+	public static final String TOKEN_PREFIX = "Bearer ";
+	
+	public static final String HEADER_STRING = "Authorization";
+	
 	@Override
 	public String create(Authentication auth) throws IOException {
 		String username = ((User) auth.getPrincipal()).getUsername();
@@ -66,7 +72,7 @@ public class JWTServiceImpl implements JWTService {
 		SecretKey secretKey = Keys.hmacShaKeyFor(PRIVATE_KEY_RSA.getBytes());
 
 		String token = Jwts.builder().setClaims(claims).setSubject(username).signWith(secretKey).setIssuedAt(new Date())
-				.setExpiration(new Date(System.currentTimeMillis() + 3600000)).compact();
+				.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_DATE)).compact();
 		
 		return token;
 	}
@@ -106,8 +112,8 @@ public class JWTServiceImpl implements JWTService {
 
 	@Override
 	public String resolve(String token) {
-		if (token != null && token.startsWith("Bearer ")) {
-			return token.replace("Bearer ", "");
+		if (token != null && token.startsWith(TOKEN_PREFIX)) {
+			return token.replace(TOKEN_PREFIX, "");
 		}
 		return null;
 	}
