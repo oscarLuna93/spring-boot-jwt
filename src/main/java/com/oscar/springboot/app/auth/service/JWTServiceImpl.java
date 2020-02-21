@@ -72,7 +72,6 @@ public class JWTServiceImpl implements JWTService {
 	public boolean validate(String token) {		
 		try {
 			getClaims(token);
-
 			return true;
 		} catch (JwtException | IllegalArgumentException e) {
 			return false;
@@ -90,8 +89,7 @@ public class JWTServiceImpl implements JWTService {
 
 	@Override
 	public String getUsername(String token) {
-		// TODO Auto-generated method stub
-		return null;
+		return getClaims(token).getSubject();
 	}
 
 	@Override
