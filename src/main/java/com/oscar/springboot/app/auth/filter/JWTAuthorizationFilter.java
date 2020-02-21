@@ -73,12 +73,6 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 		
 		if () {
 			String username = token.getSubject();
-			Object roles = token.get("authorities");
-
-			Collection<? extends GrantedAuthority> authorities = Arrays.asList(new ObjectMapper()
-					.addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixin.class)
-					.readValue(roles.toString().getBytes(), SimpleGrantedAuthority[].class));
-
 			authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
 		}
 		
