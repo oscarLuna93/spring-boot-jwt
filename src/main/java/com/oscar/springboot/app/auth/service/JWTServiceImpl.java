@@ -84,7 +84,7 @@ public class JWTServiceImpl implements JWTService {
 	@Override
 	public Claims getClaims(String token) {
 		Claims claims = Jwts.parserBuilder().setSigningKey(PRIVATE_KEY_RSA.getBytes()).build()
-				.parseClaimsJws(token.replace("Bearer", ""))
+				.parseClaimsJws(resolve(token))
 				.getBody();
 		
 		return claims;
@@ -106,7 +106,9 @@ public class JWTServiceImpl implements JWTService {
 
 	@Override
 	public String resolve(String token) {
-		// TODO Auto-generated method stub
+		if (token != null && token.startsWith("Bearer ")) {
+			return token.replace("Bearer ", "");
+		}
 		return null;
 	}
 
